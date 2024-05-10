@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-signal game_over(reason)
+signal game_over()
 signal win
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -13,10 +13,11 @@ func _on_player_health_changed(health):
 	$healthbar.value = health
 	
 	if health == 0:
-		emit_signal("game_over", "You Exploded!")
+		emit_signal("game_over")
 		
 func _on_goal_body_entered(body):
 	if body.name == "Player":
-		print("Player entered the goal!")
 		emit_signal("win")
 
+func _on_timer_game_over(reason):
+	emit_signal("game_over")

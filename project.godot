@@ -10,10 +10,11 @@ config_version=5
 
 [application]
 
-config/name="RocketGame"
-run/main_scene="res://main.tscn"
+config/name="It's not the fart that kills, it's the smäll"
+run/main_scene="res://menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/show_image=false
+config/icon="res://player.png"
 
 [display]
 

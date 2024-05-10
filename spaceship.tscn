@@ -1,22 +1,25 @@
 [gd_scene load_steps=5 format=3 uid="uid://ooahowur0mop"]
 
-[ext_resource type="Texture2D" uid="uid://b5y0x8qyhx16r" path="res://player.png" id="1_qk2v4"]
+[ext_resource type="Texture2D" uid="uid://d0x5yv288ss26" path="res://player.png" id="1_qk2v4"]
 
 [sub_resource type="GDScript" id="GDScript_fyve1"]
 script/source = "extends RigidBody2D
 
 signal health_changed(health)
 
-var main_power: float = 80 * 1000
-var thruster_power: float = 10 * 1000
+var main_power: float = 80 * 20
+var thruster_power: float = 10 * 20
 var health : float = 1000
 
 var controlled = true
 
-func _on_ui_game_over(reason):
+func _on_ui_win():
+	controlled = false
+	
+func _on_ui_game_over():
 	controlled = false
 
-func _physics_process(delta):
+func _integrate_forces(state):
 	$main_engine.emitting = false
 	$left_thruster.emitting = false
 	$right_thruster.emitting = false
@@ -27,31 +30,30 @@ func _physics_process(delta):
 	# Main engine
 	if Input.is_action_pressed(\"thrust\"):
 		$main_engine.emitting = true
-		apply_force(Vector2.UP.rotated(rotation) * main_power * delta, 
+		apply_force(Vector2.UP.rotated(rotation) * main_power , 
 					$main_engine.position.rotated(rotation))
 	
 	# Thrusters	
 	if Input.is_action_pressed(\"rot left\"):
 		$right_thruster.emitting = true
-		apply_force(Vector2.LEFT.rotated(rotation) * thruster_power * delta, 
+		apply_force(Vector2.LEFT.rotated(rotation) * thruster_power,
 					$right_thruster.position.rotated(rotation)) 
 	elif Input.is_action_pressed(\"rot right\"):
 		$left_thruster.emitting = true
-		apply_force(Vector2.RIGHT.rotated(rotation) * thruster_power * delta, 
+		apply_force(Vector2.RIGHT.rotated(rotation) * thruster_power, 
 					$left_thruster.position.rotated(rotation))
-
-func _integrate_forces(state):
  # Iterate over all contacts
 	var collision_force = 0
 	for i in range(get_contact_count()):
 		# Get the impulse for each contact
-		var impulse = state.get_contact_impulse(i)
-		collision_force += impulse.length()
+		collision_force += state.get_contact_impulse(i).length()
 	if collision_force > 150: # Threshold
-		health -= collision_force
+		health -= collision_force / 5
 		if health < 0.0:
 			health = 0
 		emit_signal(\"health_changed\", health) # Emit the updated health value		
+
+
 "
 
 [sub_resource type="Curve" id="Curve_mwyt5"]

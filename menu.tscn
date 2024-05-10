@@ -1,10 +1,72 @@
-[gd_scene load_steps=3 format=3 uid="uid://da1tic6dero1p"]
+[gd_scene load_steps=6 format=3 uid="uid://da1tic6dero1p"]
 
 [ext_resource type="Script" path="res://menu.gd" id="1_lcktp"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6coov"]
-font_size = 30
-shadow_size = 9
+line_spacing = 10.0
+font_size = 55
+font_color = Color(0.92926, 0.763335, 0.806336, 1)
+shadow_size = 12
+
+[sub_resource type="Animation" id="Animation_64ye0"]
+resource_name = "fade_in"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Transition/ColorRect:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Transition/ColorRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_wnq43"]
+resource_name = "fade_out"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Transition/ColorRect:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Transition/ColorRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_h0wgn"]
+_data = {
+"fade_in": SubResource("Animation_64ye0"),
+"fade_out": SubResource("Animation_wnq43")
+}
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -15,24 +77,55 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lcktp")
 
+[node name="background" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 799.0
+offset_bottom = 600.0
+color = Color(0.0901881, 0.156683, 0.184136, 1)
+
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -399.0
+offset_top = 34.0
+offset_right = 398.0
+offset_bottom = 565.0
 grow_horizontal = 2
-grow_vertical = 2
 alignment = 1
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "It's not the fart that kills
+size_flags_vertical = 2
+text = "It's not the fart that kills,
 It's the smäll"
 label_settings = SubResource("LabelSettings_6coov")
 horizontal_alignment = 1
-vertical_alignment = 1
+
+[node name="controls" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Use WASD or arrow keys to control. "
+horizontal_alignment = 1
 
 [node name="Start_text" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "Press spacebar to start"
+size_flags_vertical = 10
+text = "<Press spacebar to start>"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Transition" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_h0wgn")
+}
+
+[node name="ColorRect" type="ColorRect" parent="Transition"]
+visible = false
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[connection signal="animation_finished" from="Transition" to="." method="_on_transition_animation_finished"]

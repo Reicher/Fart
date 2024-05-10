@@ -4,7 +4,7 @@
 
 [sub_resource type="GDScript" id="GDScript_afi5c"]
 script/source = "extends Panel
-var time_left: float = 30 
+var time_left: float = 45 
 
 signal game_over(reason)
 
@@ -20,17 +20,17 @@ func _process(delta):
 
 "
 
-[sub_resource type="GDScript" id="GDScript_33nb8"]
-script/source = "extends Panel
+[sub_resource type="GDScript" id="GDScript_pki3a"]
+script/source = "extends MarginContainer
 
 func _ready():
 	visible = false
 
 func show_text(text):
 	if visible == false:
-		$info_text.text = text
+		$Info_text.text = text
 		visible = true
-	
+
 func _process(delta):
 	if visible:
 		if Input.is_action_just_pressed(\"space\"):
@@ -61,10 +61,10 @@ fill_mode = 1
 show_percentage = false
 
 [node name="Timer" type="Panel" parent="."]
-offset_left = 390.0
-offset_top = 25.0
-offset_right = 430.0
-offset_bottom = 65.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
 script = SubResource("GDScript_afi5c")
 
 [node name="time_left" type="Label" parent="Timer"]
@@ -80,26 +80,26 @@ offset_right = 63.0
 offset_bottom = 23.0
 text = "s"
 
-[node name="Info-panel" type="Panel" parent="."]
-offset_right = 802.0
-offset_bottom = 599.0
-script = SubResource("GDScript_33nb8")
-
-[node name="info_text" type="TextEdit" parent="Info-panel"]
-layout_mode = 0
-offset_left = 223.0
-offset_top = 175.0
-offset_right = 641.0
-offset_bottom = 249.0
-
-[node name="Start_text" type="Label" parent="Info-panel"]
-offset_left = 339.0
-offset_top = 267.0
+[node name="Info-box" type="MarginContainer" parent="."]
+offset_left = 323.0
+offset_top = 256.0
 offset_right = 517.0
-offset_bottom = 290.0
-text = "Press spacebar to start"
+offset_bottom = 329.0
+script = SubResource("GDScript_pki3a")
+
+[node name="Info_text" type="Label" parent="Info-box"]
+layout_mode = 2
+size_flags_vertical = 1
 horizontal_alignment = 1
 
-[connection signal="game_over" from="." to="Info-panel" method="_on_ui_game_over"]
-[connection signal="win" from="." to="Info-panel" method="_on_ui_win"]
-[connection signal="game_over" from="Timer" to="Info-panel" method="_on_timer_game_over"]
+[node name="Start_text" type="Label" parent="Info-box"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Press spacebar to restart"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="game_over" from="." to="Info-box" method="_on_ui_game_over"]
+[connection signal="win" from="." to="Info-box" method="_on_ui_win"]
+[connection signal="game_over" from="Timer" to="." method="_on_timer_game_over"]
+[connection signal="game_over" from="Timer" to="Info-box" method="_on_timer_game_over"]
