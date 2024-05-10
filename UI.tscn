@@ -1,0 +1,105 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsk8i801od7gf"]
+
+[ext_resource type="Script" path="res://UI.gd" id="1_mtq0a"]
+
+[sub_resource type="GDScript" id="GDScript_afi5c"]
+script/source = "extends Panel
+var time_left: float = 30 
+
+signal game_over(reason)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	time_left -= fmod(delta, 60)
+
+	if time_left < 0.0:
+		time_left = 0.0
+		emit_signal(\"game_over\", \"Time out!\")
+		
+	$time_left.text = \"%0d\" % (time_left)
+
+"
+
+[sub_resource type="GDScript" id="GDScript_33nb8"]
+script/source = "extends Panel
+
+func _ready():
+	visible = false
+
+func show_text(text):
+	if visible == false:
+		$info_text.text = text
+		visible = true
+	
+func _process(delta):
+	if visible:
+		if Input.is_action_just_pressed(\"space\"):
+			get_tree().reload_current_scene()
+
+func _on_timer_game_over(reason):
+	show_text(reason)
+
+func _on_ui_game_over(reason):
+	show_text(reason)
+
+func _on_ui_win():
+	show_text(\"YOU WON!\")
+"
+
+[node name="UI" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_mtq0a")
+
+[node name="healthbar" type="ProgressBar" parent="."]
+offset_left = 28.0
+offset_top = 551.0
+offset_right = 274.0
+offset_bottom = 578.0
+max_value = 1000.0
+value = 1000.0
+fill_mode = 1
+show_percentage = false
+
+[node name="Timer" type="Panel" parent="."]
+offset_left = 390.0
+offset_top = 25.0
+offset_right = 430.0
+offset_bottom = 65.0
+script = SubResource("GDScript_afi5c")
+
+[node name="time_left" type="Label" parent="Timer"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "30"
+
+[node name="seconds-text" type="Label" parent="Timer"]
+layout_mode = 0
+offset_left = 23.0
+offset_right = 63.0
+offset_bottom = 23.0
+text = "s"
+
+[node name="Info-panel" type="Panel" parent="."]
+offset_right = 802.0
+offset_bottom = 599.0
+script = SubResource("GDScript_33nb8")
+
+[node name="info_text" type="TextEdit" parent="Info-panel"]
+layout_mode = 0
+offset_left = 223.0
+offset_top = 175.0
+offset_right = 641.0
+offset_bottom = 249.0
+
+[node name="Start_text" type="Label" parent="Info-panel"]
+offset_left = 339.0
+offset_top = 267.0
+offset_right = 517.0
+offset_bottom = 290.0
+text = "Press spacebar to start"
+horizontal_alignment = 1
+
+[connection signal="game_over" from="." to="Info-panel" method="_on_ui_game_over"]
+[connection signal="win" from="." to="Info-panel" method="_on_ui_win"]
+[connection signal="game_over" from="Timer" to="Info-panel" method="_on_timer_game_over"]

@@ -1,0 +1,127 @@
+[gd_scene load_steps=5 format=3 uid="uid://ooahowur0mop"]
+
+[ext_resource type="Texture2D" uid="uid://b5y0x8qyhx16r" path="res://player.png" id="1_qk2v4"]
+
+[sub_resource type="GDScript" id="GDScript_fyve1"]
+script/source = "extends RigidBody2D
+
+signal health_changed(health)
+
+var main_power: float = 80 * 1000
+var thruster_power: float = 10 * 1000
+var health : float = 1000
+
+var controlled = true
+
+func _on_ui_game_over(reason):
+	controlled = false
+
+func _physics_process(delta):
+	$main_engine.emitting = false
+	$left_thruster.emitting = false
+	$right_thruster.emitting = false
+	
+	if not controlled:
+		return
+	
+	# Main engine
+	if Input.is_action_pressed(\"thrust\"):
+		$main_engine.emitting = true
+		apply_force(Vector2.UP.rotated(rotation) * main_power * delta, 
+					$main_engine.position.rotated(rotation))
+	
+	# Thrusters	
+	if Input.is_action_pressed(\"rot left\"):
+		$right_thruster.emitting = true
+		apply_force(Vector2.LEFT.rotated(rotation) * thruster_power * delta, 
+					$right_thruster.position.rotated(rotation)) 
+	elif Input.is_action_pressed(\"rot right\"):
+		$left_thruster.emitting = true
+		apply_force(Vector2.RIGHT.rotated(rotation) * thruster_power * delta, 
+					$left_thruster.position.rotated(rotation))
+
+func _integrate_forces(state):
+ # Iterate over all contacts
+	var collision_force = 0
+	for i in range(get_contact_count()):
+		# Get the impulse for each contact
+		var impulse = state.get_contact_impulse(i)
+		collision_force += impulse.length()
+	if collision_force > 150: # Threshold
+		health -= collision_force
+		if health < 0.0:
+			health = 0
+		emit_signal(\"health_changed\", health) # Emit the updated health value		
+"
+
+[sub_resource type="Curve" id="Curve_mwyt5"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.794643, 0.344538), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_1cab1"]
+offsets = PackedFloat32Array(0, 0.159524, 0.378571, 0.588095, 1)
+colors = PackedColorArray(0.47798, 0.678107, 0.992614, 1, 1, 0.506658, 0.998335, 1, 0.919935, 0.442771, 0, 1, 0.784314, 0.72549, 0, 0.462745, 1, 1, 1, 0.0156863)
+
+[node name="Player" type="RigidBody2D"]
+position = Vector2(2.08165e-12, 2.08165e-12)
+gravity_scale = 0.5
+center_of_mass_mode = 1
+center_of_mass = Vector2(0, 25)
+can_sleep = false
+continuous_cd = 2
+max_contacts_reported = 7
+contact_monitor = true
+script = SubResource("GDScript_fyve1")
+
+[node name="main_engine" type="CPUParticles2D" parent="."]
+position = Vector2(-2.08165e-12, 40)
+emitting = false
+amount = 1500
+lifetime = 0.5
+randomness = 0.35
+lifetime_randomness = 0.46
+emission_shape = 3
+emission_rect_extents = Vector2(15, 1)
+direction = Vector2(2.08165e-12, 1)
+spread = 15.77
+gravity = Vector2(2.08165e-12, 2.08165e-12)
+initial_velocity_min = 230.77
+initial_velocity_max = 478.63
+scale_amount_min = 0.5
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_mwyt5")
+color_ramp = SubResource("Gradient_1cab1")
+
+[node name="left_thruster" type="CPUParticles2D" parent="."]
+position = Vector2(-27, -22)
+emitting = false
+amount = 100
+lifetime = 0.2
+explosiveness = 0.18
+lifetime_randomness = 1.0
+direction = Vector2(-1, 2.08165e-12)
+gravity = Vector2(2.08165e-12, 2.08165e-12)
+initial_velocity_min = 320.83
+initial_velocity_max = 412.5
+scale_amount_min = 0.5
+
+[node name="right_thruster" type="CPUParticles2D" parent="."]
+position = Vector2(27, -22)
+emitting = false
+amount = 100
+lifetime = 0.2
+explosiveness = 0.18
+lifetime_randomness = 1.0
+gravity = Vector2(2.08165e-12, 2.08165e-12)
+initial_velocity_min = 320.83
+initial_velocity_max = 412.5
+scale_amount_min = 0.5
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_qk2v4")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-2.08165e-12, -40, -27, -25, -27, 25, -32, 36, -26, 40, 26, 40, 32, 36, 27, 25, 27, -26)

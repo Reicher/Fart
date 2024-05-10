@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://da1tic6dero1p"]
+
+[ext_resource type="Script" path="res://menu.gd" id="1_lcktp"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_6coov"]
+font_size = 30
+shadow_size = 9
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lcktp")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "It's not the fart that kills
+It's the smäll"
+label_settings = SubResource("LabelSettings_6coov")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Start_text" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Press spacebar to start"
+horizontal_alignment = 1
