@@ -16,7 +16,7 @@ var controlled = true
 func _on_ui_win():
 	controlled = false
 	
-func _on_ui_game_over():
+func _on_ui_game_over(reason):
 	controlled = false
 
 func _integrate_forces(state):

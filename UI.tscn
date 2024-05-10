@@ -4,7 +4,7 @@
 
 [sub_resource type="GDScript" id="GDScript_afi5c"]
 script/source = "extends Panel
-var time_left: float = 45 
+var time_left: float = 41
 
 signal game_over(reason)
 
